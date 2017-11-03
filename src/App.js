@@ -1,9 +1,19 @@
 import React from 'react';
 import Header from './components/Header';
-import Grid from './components/Grid';
-import Form from './components/Form';
 import firebase from 'firebase';
 import _ from 'lodash';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Page1 from './components/Page1';
+import Page2 from './components/Page2';
+import Page3 from './components/Page3';
+import Lost from './components/Lost';
+
+const styles = {
+  textAlign: 'center',
+  margin: 0,
+  padding: 0,
+  fontFamily: 'sans-serif',
+};
 
 class App extends React.Component {
   constructor(props) {
@@ -20,13 +30,13 @@ class App extends React.Component {
   componentWillMount() {
     firebase.initializeApp({
 
-          apiKey: "AIzaSyDPX752bzaF91FFUxZenNcFc8yDzPv-jCg",
-          authDomain: "notepad-dac2c.firebaseapp.com",
-          databaseURL: "https://notepad-dac2c.firebaseio.com",
-          projectId: "notepad-dac2c",
-          storageBucket: "notepad-dac2c.appspot.com",
-          messagingSenderId: "210595257076"
-      
+      apiKey: "AIzaSyDPX752bzaF91FFUxZenNcFc8yDzPv-jCg",
+      authDomain: "notepad-dac2c.firebaseapp.com",
+      databaseURL: "https://notepad-dac2c.firebaseio.com",
+      projectId: "notepad-dac2c",
+      storageBucket: "notepad-dac2c.appspot.com",
+      messagingSenderId: "210595257076"
+
     });
 
     // console.log('Firebase success!!!');
@@ -45,11 +55,9 @@ class App extends React.Component {
         this.setState({
           notes: store,
         })
-  
-      });
-    
-  }
 
+      });
+  }
 
   handleChange(event) {
     const name = event.target.name;
@@ -70,7 +78,7 @@ class App extends React.Component {
     firebase.database().ref('/notes').push(data, response => response);
 
     this.setState({
-      currentTitle: '', 
+      currentTitle: '',
       currentDetails: '',
     });
   }
@@ -82,16 +90,25 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">        
-        <Header name={this.state.name}/>
-        <Form 
-          currentTitle = {this.state.currentTitle}
-          currentDetails = {this.state.currentDetails}         
-          handleChange = {this.handleChange.bind(this)}
-          handleSubmit = {this.handleSubmit.bind(this)}
-        />
-        <Grid notes={this.state.notes} deleteNote = {this.deleteNote.bind(this)}/>
-      </div>
+      <Router>
+        <div style={styles}>
+          <Header name={this.state.name} />
+          <Switch>
+            <Route exact path='/' render={(props) => (
+              <Page1
+                notes={this.state.notes}
+                deleteNote={this.deleteNote.bind(this)}
+                currentTitle={this.state.currentTitle}
+                currentDetails={this.state.currentDetails}
+                handleChange={this.handleChange.bind(this)}
+                handleSubmit={this.handleSubmit.bind(this)} />
+            )} />
+            <Route path='/page2' component={Page2} />
+            <Route path='/page3' component={Page3} />
+            <Route component={Lost} />
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }
